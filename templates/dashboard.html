@@ -1,0 +1,613 @@
+<!doctype html>
+<html lang="{{ language }}" dir="{{ direction }}">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <meta name="theme-color" content="#111c2c">
+  <title>{{ "لوحة مراقبة الدخول بالبصمة" if language == "ar" else "Fingerprint Access Monitor" }}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='dashboard.css') }}">
+</head>
+<body>
+  <svg class="svg-sprite" aria-hidden="true">
+    <symbol id="icon-fingerprint" viewBox="0 0 24 24">
+      <path d="M12 11a2 2 0 0 1 2 2c0 3-.7 5.2-2 7"></path>
+      <path d="M8.2 21c1.1-2.1 1.8-4.6 1.8-8a2 2 0 1 1 4 0"></path>
+      <path d="M5.1 18.5A15 15 0 0 0 6 13a6 6 0 0 1 12 0c0 3-.5 5.8-1.5 8"></path>
+      <path d="M3 14v-1a9 9 0 0 1 18 0c0 1.7-.1 3.3-.5 5"></path>
+      <path d="M5.2 8A8.9 8.9 0 0 1 12 4.2c2.7 0 5.1 1.2 6.7 3"></path>
+    </symbol>
+    <symbol id="icon-dashboard" viewBox="0 0 24 24">
+      <rect x="3" y="3" width="7" height="7" rx="2"></rect><rect x="14" y="3" width="7" height="7" rx="2"></rect>
+      <rect x="3" y="14" width="7" height="7" rx="2"></rect><rect x="14" y="14" width="7" height="7" rx="2"></rect>
+    </symbol>
+    <symbol id="icon-records" viewBox="0 0 24 24">
+      <rect x="4" y="3" width="16" height="18" rx="2"></rect><path d="M8 8h8M8 12h8M8 16h5"></path>
+    </symbol>
+    <symbol id="icon-users" viewBox="0 0 24 24">
+      <circle cx="9" cy="8" r="4"></circle><path d="M2.8 21v-2a6.2 6.2 0 0 1 12.4 0v2M17 11a4 4 0 0 1 4 4v6"></path>
+    </symbol>
+    <symbol id="icon-alert" viewBox="0 0 24 24">
+      <path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4"></path>
+    </symbol>
+    <symbol id="icon-report" viewBox="0 0 24 24">
+      <path d="M6 3h9l4 4v14H6zM15 3v5h4"></path><path d="M9 17v-3M13 17v-6M17 17v-4"></path>
+    </symbol>
+    <symbol id="icon-settings" viewBox="0 0 24 24">
+      <circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1-2.8 2.8-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.6v.2h-4V21a1.7 1.7 0 0 0-1-1.6 1.7 1.7 0 0 0-1.9.3l-.1.1L4.2 17l.1-.1a1.7 1.7 0 0 0 .3-1.9A1.7 1.7 0 0 0 3 14H2.8v-4H3a1.7 1.7 0 0 0 1.6-1 1.7 1.7 0 0 0-.3-1.9L4.2 7 7 4.2l.1.1A1.7 1.7 0 0 0 9 4.6a1.7 1.7 0 0 0 1-1.6v-.2h4V3a1.7 1.7 0 0 0 1 1.6 1.7 1.7 0 0 0 1.9-.3l.1-.1L19.8 7l-.1.1a1.7 1.7 0 0 0-.3 1.9 1.7 1.7 0 0 0 1.6 1h.2v4H21a1.7 1.7 0 0 0-1.6 1z"></path>
+    </symbol>
+    <symbol id="icon-menu" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"></path></symbol>
+    <symbol id="icon-close" viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18"></path></symbol>
+    <symbol id="icon-globe" viewBox="0 0 24 24">
+      <circle cx="12" cy="12" r="9"></circle><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"></path>
+    </symbol>
+    <symbol id="icon-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"></circle><path d="M4 21a8 8 0 0 1 16 0"></path></symbol>
+    <symbol id="icon-chevron" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"></path></symbol>
+    <symbol id="icon-shield" viewBox="0 0 24 24"><path d="M12 3 4.5 6v5.5c0 4.7 3.2 8.2 7.5 9.5 4.3-1.3 7.5-4.8 7.5-9.5V6z"></path><path d="m8.7 12 2.1 2.1 4.6-4.6"></path></symbol>
+    <symbol id="icon-x-circle" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"></circle><path d="m9 9 6 6M15 9l-6 6"></path></symbol>
+    <symbol id="icon-lock" viewBox="0 0 24 24"><rect x="5" y="10" width="14" height="11" rx="2"></rect><path d="M8 10V7a4 4 0 0 1 8 0v3M12 14v3"></path></symbol>
+    <symbol id="icon-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></symbol>
+    <symbol id="icon-search" viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.5"></circle><path d="m16 16 5 5"></path></symbol>
+    <symbol id="icon-filter" viewBox="0 0 24 24"><path d="M4 5h16l-6 7v6l-4 2v-8z"></path></symbol>
+    <symbol id="icon-check" viewBox="0 0 24 24"><path d="m5 12 4 4L19 6"></path></symbol>
+    <symbol id="icon-database" viewBox="0 0 24 24"><ellipse cx="12" cy="5" rx="8" ry="3"></ellipse><path d="M4 5v7c0 1.7 3.6 3 8 3s8-1.3 8-3V5M4 12v7c0 1.7 3.6 3 8 3s8-1.3 8-3v-7"></path></symbol>
+    <symbol id="icon-cpu" viewBox="0 0 24 24"><rect x="6" y="6" width="12" height="12" rx="2"></rect><path d="M9 1v3M15 1v3M9 20v3M15 20v3M1 9h3M1 15h3M20 9h3M20 15h3M10 10h4v4h-4z"></path></symbol>
+    <symbol id="icon-led" viewBox="0 0 24 24"><path d="M8 14a6 6 0 1 1 8 0l-2 3h-4zM9 20h6M12 1v2M3.5 4.5 5 6M21 4.5 19 6"></path></symbol>
+    <symbol id="icon-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"></circle><path d="M12 11v6M12 7h.01"></path></symbol>
+    <symbol id="icon-print" viewBox="0 0 24 24"><path d="M7 9V3h10v6M7 17H5a2 2 0 0 1-2-2v-4a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v4a2 2 0 0 1-2 2h-2M7 14h10v7H7z"></path></symbol>
+  </svg>
+
+  <header class="topbar">
+    <div class="brand-block">
+      <button class="icon-button mobile-menu" id="menuButton" type="button" aria-label="فتح القائمة" aria-expanded="false">
+        <svg class="icon"><use href="#icon-menu"></use></svg>
+      </button>
+      <div class="brand-mark"><svg class="icon"><use href="#icon-fingerprint"></use></svg></div>
+      <div class="brand-copy">
+        <strong data-i18n="brand">مراقب الدخول بالبصمة</strong>
+        <span>FSAS-LED-01</span>
+      </div>
+    </div>
+
+    <div class="topbar-actions">
+      <span class="demo-chip"><span class="demo-chip-dot"></span><span data-i18n="liveData">بيانات SQLite</span></span>
+      <span class="health-status"><span class="health-dot{% if not latest %} idle{% endif %}" id="healthDot"></span><span id="healthLabel" data-i18n="{{ 'eventRecorded' if latest else 'awaitingEvent' }}">{{ "حدث أخير مسجل" if latest else "بانتظار أول حدث" }}</span></span>
+      <button class="language-button" id="languageButton" type="button" aria-label="Switch to English">
+        <svg class="icon"><use href="#icon-globe"></use></svg>
+        <span id="languageLabel">EN</span>
+      </button>
+      <div class="account-pill">
+        <svg class="icon"><use href="#icon-user"></use></svg>
+        <span data-i18n="administrator">Administrator</span>
+        <svg class="icon chevron"><use href="#icon-chevron"></use></svg>
+      </div>
+    </div>
+  </header>
+
+  <aside class="sidebar" id="sidebar" aria-label="التنقل الرئيسي">
+    <div class="sidebar-head">
+      <span data-i18n="navigation">التنقل</span>
+      <button class="icon-button sidebar-close" id="closeSidebar" type="button" aria-label="إغلاق القائمة">
+        <svg class="icon"><use href="#icon-close"></use></svg>
+      </button>
+    </div>
+    <nav class="side-nav">
+      <button class="nav-item is-active" type="button" data-view="dashboard">
+        <svg class="icon"><use href="#icon-dashboard"></use></svg><span data-i18n="navDashboard">لوحة المعلومات</span>
+      </button>
+      <button class="nav-item" type="button" data-view="records">
+        <svg class="icon"><use href="#icon-records"></use></svg><span data-i18n="navRecords">سجلات الدخول</span>
+        <span class="nav-count" id="navRecordCount">{{ record_count }}</span>
+      </button>
+      <button class="nav-item" type="button" data-view="users">
+        <svg class="icon"><use href="#icon-users"></use></svg><span data-i18n="navUsers">المستخدمون</span>
+      </button>
+      <button class="nav-item" type="button" data-view="alerts">
+        <svg class="icon"><use href="#icon-alert"></use></svg><span data-i18n="navAlerts">التنبيهات</span>
+        <span class="nav-count nav-count-alert" id="navAlertCount">{{ alert_count }}</span>
+      </button>
+      <button class="nav-item" type="button" data-view="reports">
+        <svg class="icon"><use href="#icon-report"></use></svg><span data-i18n="navReports">التقارير</span>
+      </button>
+      <button class="nav-item" type="button" data-view="system">
+        <svg class="icon"><use href="#icon-settings"></use></svg><span data-i18n="navSystem">النظام</span>
+      </button>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="sidebar-clock-icon"><svg class="icon"><use href="#icon-clock"></use></svg></div>
+      <div><strong id="liveClock">--:--:--</strong><span id="liveDate">--</span></div>
+    </div>
+  </aside>
+  <button class="sidebar-overlay" id="sidebarOverlay" type="button" aria-label="إغلاق القائمة"></button>
+
+  <main class="main-content" id="mainContent">
+    <div class="sample-notice" role="note">
+      <svg class="icon"><use href="#icon-info"></use></svg>
+      <span data-i18n="liveNotice">تعرض هذه الواجهة سجلات SQLite الفعلية للقراءة فقط؛ لا ترسل أي أوامر إلى Arduino.</span>
+    </div>
+
+    <section class="view is-active" data-view-panel="dashboard" aria-labelledby="dashboard-title">
+      <div class="page-heading">
+        <div>
+          <p class="eyebrow" data-i18n="monitoringOverview">نظرة المراقبة</p>
+          <h1 id="dashboard-title" data-i18n="dashboardTitle">لوحة المعلومات</h1>
+          <p data-i18n="dashboardSubtitle">ملخص نشاط المصادقة ببصمة الإصبع</p>
+        </div>
+        <div class="last-updated"><span data-i18n="lastUpdated">آخر تحديث</span><strong id="lastUpdated">--:--</strong></div>
+      </div>
+
+      <div class="stats-grid">
+        <article class="stat-card stat-blue">
+          <div class="stat-icon"><svg class="icon"><use href="#icon-fingerprint"></use></svg></div>
+          <div class="stat-content"><span data-i18n="totalAttempts">إجمالي المحاولات</span><strong id="totalAttemptsValue">{{ summary["total_attempts"] }}</strong><small data-i18n="attemptsBreakdown">{{ summary["successful_attempts"] }} ناجحة · {{ summary["failed_attempts"] }} مرفوضة</small></div>
+        </article>
+        <article class="stat-card stat-green">
+          <div class="stat-icon"><svg class="icon"><use href="#icon-shield"></use></svg></div>
+          <div class="stat-content"><span data-i18n="authorized">مصرّح بها</span><strong id="authorizedValue">{{ summary["successful_attempts"] }}</strong><small data-i18n="authorizedShare">{{ authorized_percent }}% من المحاولات</small></div>
+        </article>
+        <article class="stat-card stat-red">
+          <div class="stat-icon"><svg class="icon"><use href="#icon-x-circle"></use></svg></div>
+          <div class="stat-content"><span data-i18n="denied">مرفوضة</span><strong id="deniedValue">{{ summary["failed_attempts"] }}</strong><small data-i18n="deniedShare">{{ denied_percent }}% من المحاولات</small></div>
+        </article>
+        <article class="stat-card stat-amber">
+          <div class="stat-icon"><svg class="icon"><use href="#icon-lock"></use></svg></div>
+          <div class="stat-content"><span data-i18n="lockouts">حالات القفل المؤقت</span><strong id="lockoutValue">{{ summary["lockout_events"] }}</strong><small data-i18n="lockoutsSubtitle">أحداث مسجلة في السجل</small></div>
+        </article>
+      </div>
+
+      <article class="led-legend">
+        <div class="legend-copy">
+          <div class="legend-heading"><svg class="icon"><use href="#icon-led"></use></svg><strong data-i18n="ledLegendTitle">دلالة مؤشرات النموذج</strong></div>
+          <p data-i18n="ledLegendDescription">يشغّل Arduino الـRelay محليًا، فتضيء LED الخضراء عبر نقاط COM/NO لمحاكاة إشارة فتح القفل. LED الحمراء تعني الرفض أو الخطأ أو القفل المؤقت.</p>
+        </div>
+        <div class="led-items">
+          <span><i class="led led-green"></i><b data-i18n="greenLed">Relay + أخضر: دخول مسموح</b></span>
+          <span><i class="led led-red"></i><b data-i18n="redLed">أحمر: رفض / خطأ / قفل</b></span>
+        </div>
+      </article>
+
+      <article class="panel records-panel">
+        <div class="panel-heading">
+          <div><h2 data-i18n="recentRecords">أحدث سجلات الدخول</h2><p data-i18n="recentRecordsSubtitle">آخر الأحداث التي استقبلها تطبيق المراقبة</p></div>
+          <button class="text-button" type="button" data-go-view="records"><span data-i18n="viewAll">عرض الكل</span><svg class="icon"><use href="#icon-chevron"></use></svg></button>
+        </div>
+        <div class="table-scroll">
+          <table>
+            <thead><tr>
+              <th scope="col">#</th><th scope="col" data-i18n="user">المستخدم</th><th scope="col" data-i18n="result">النتيجة</th>
+              <th scope="col" data-i18n="status">الحالة</th><th scope="col" data-i18n="reason">السبب</th><th scope="col" data-i18n="latency">الاستجابة</th><th scope="col" data-i18n="time">الوقت</th>
+            </tr></thead>
+            <tbody id="dashboardRecords"></tbody>
+          </table>
+        </div>
+      </article>
+    </section>
+
+    <section class="view" data-view-panel="records" aria-labelledby="records-title" hidden>
+      <div class="page-heading">
+        <div><p class="eyebrow" data-i18n="eventHistory">سجل الأحداث</p><h1 id="records-title" data-i18n="recordsTitle">سجلات الدخول</h1><p data-i18n="recordsSubtitle">استعراض محاولات المصادقة وأحداث النظام المسجلة</p></div>
+      </div>
+      <article class="panel">
+        <div class="records-toolbar">
+          <label class="search-field">
+            <svg class="icon"><use href="#icon-search"></use></svg>
+            <span class="sr-only" data-i18n="searchLabel">البحث في السجلات</span>
+            <input id="recordSearch" type="search" autocomplete="off" data-i18n-placeholder="searchPlaceholder" placeholder="ابحث باسم المستخدم أو السبب">
+          </label>
+          <label class="filter-field">
+            <svg class="icon"><use href="#icon-filter"></use></svg><span class="sr-only" data-i18n="filterLabel">تصفية النتائج</span>
+            <select id="recordFilter">
+              <option value="ALL" data-i18n="filterAll">كل الحالات</option>
+              <option value="SUCCESS" data-i18n="filterSuccess">ناجحة</option>
+              <option value="FAILED" data-i18n="filterDenied">مرفوضة</option>
+              <option value="LOCKOUT" data-i18n="filterLockout">قفل مؤقت</option>
+              <option value="ERROR" data-i18n="filterErrors">أخطاء</option>
+            </select>
+          </label>
+        </div>
+        <div class="table-scroll">
+          <table>
+            <thead><tr>
+              <th scope="col">#</th><th scope="col" data-i18n="dateTime">التاريخ والوقت</th><th scope="col" data-i18n="user">المستخدم</th><th scope="col" data-i18n="result">النتيجة</th>
+              <th scope="col" data-i18n="status">الحالة</th><th scope="col" data-i18n="reason">السبب</th><th scope="col" data-i18n="failedCount">الفشل المتتالي</th><th scope="col" data-i18n="latency">الاستجابة</th><th scope="col" data-i18n="indicator">المؤشر</th>
+            </tr></thead>
+            <tbody id="allRecords"></tbody>
+          </table>
+        </div>
+        <div class="table-footer"><span id="recordCount"></span><span data-i18n="monitoringOnly">واجهة مراقبة للقراءة فقط</span></div>
+      </article>
+    </section>
+
+    <section class="view" data-view-panel="users" aria-labelledby="users-title" hidden>
+      <div class="page-heading">
+        <div><p class="eyebrow" data-i18n="identityScope">نطاق الهويات</p><h1 id="users-title" data-i18n="usersTitle">المستخدمون</h1><p data-i18n="usersSubtitle">الهويتان المعتمدتان فقط في نموذج المصادقة</p></div>
+        <span class="read-only-chip"><svg class="icon"><use href="#icon-shield"></use></svg><span data-i18n="readOnly">عرض فقط</span></span>
+      </div>
+      <div class="identity-grid">
+        <article class="identity-card">
+          <div class="identity-top"><div class="avatar avatar-admin">AD</div><span class="badge badge-success"><i></i><span data-i18n="active">نشط</span></span></div>
+          <h2>Administrator</h2><p data-i18n="administratorRole">مسؤول النظام</p>
+          <dl><div><dt data-i18n="templateId">معرّف البصمة</dt><dd>1</dd></div><div><dt data-i18n="recordedAttempts">المحاولات المسجلة</dt><dd id="administratorAttemptsValue">{{ summary["administrator_attempts"] }}</dd></div><div><dt data-i18n="lastSeen">آخر ظهور</dt><dd id="administratorLastSeen"{% if latest_administrator %} data-date="{{ latest_administrator['received_at'] }}"{% endif %}>—</dd></div></dl>
+          <div class="identity-note"><svg class="icon"><use href="#icon-check"></use></svg><span data-i18n="adminPermission">هوية معتمدة للمصادقة المحلية</span></div>
+        </article>
+        <article class="identity-card">
+          <div class="identity-top"><div class="avatar avatar-tech">TC</div><span class="badge badge-success"><i></i><span data-i18n="active">نشط</span></span></div>
+          <h2>Technician</h2><p data-i18n="technicianRole">الفني</p>
+          <dl><div><dt data-i18n="templateId">معرّف البصمة</dt><dd>2</dd></div><div><dt data-i18n="recordedAttempts">المحاولات المسجلة</dt><dd id="technicianAttemptsValue">{{ summary["technician_attempts"] }}</dd></div><div><dt data-i18n="lastSeen">آخر ظهور</dt><dd id="technicianLastSeen"{% if latest_technician %} data-date="{{ latest_technician['received_at'] }}"{% endif %}>—</dd></div></dl>
+          <div class="identity-note"><svg class="icon"><use href="#icon-check"></use></svg><span data-i18n="techPermission">هوية معتمدة للمصادقة المحلية</span></div>
+        </article>
+      </div>
+      <article class="panel scope-panel">
+        <div class="scope-icon"><svg class="icon"><use href="#icon-fingerprint"></use></svg></div>
+        <div><h2 data-i18n="identityPolicy">سياسة الهوية</h2><p data-i18n="identityPolicyText">يقبل النظام المعرّفين 1 و2 فقط. تُسجّل أي بصمة غير معروفة كمحاولة مرفوضة، ولا تُخزّن صور البصمات أو قوالبها في قاعدة البيانات.</p></div>
+      </article>
+    </section>
+
+    <section class="view" data-view-panel="alerts" aria-labelledby="alerts-title" hidden>
+      <div class="page-heading">
+        <div><p class="eyebrow" data-i18n="securityMonitoring">المراقبة الأمنية</p><h1 id="alerts-title" data-i18n="alertsTitle">التنبيهات</h1><p data-i18n="alertsSubtitle">الأحداث التي تحتاج مراجعة المشرف</p></div>
+        <span class="alert-summary"><strong id="alertSummaryCount">{{ alert_count }}</strong><span data-i18n="openAlerts">تنبيهات للعرض</span></span>
+      </div>
+      <div class="alert-list" id="alertList"></div>
+    </section>
+
+    <section class="view" data-view-panel="reports" aria-labelledby="reports-title" hidden>
+      <div class="page-heading">
+        <div><p class="eyebrow" data-i18n="activityAnalysis">تحليل النشاط</p><h1 id="reports-title" data-i18n="reportsTitle">التقارير</h1><p data-i18n="reportsSubtitle">ملخص مرئي لاتجاهات محاولات المصادقة</p></div>
+        <button class="secondary-button" id="printReport" type="button"><svg class="icon"><use href="#icon-print"></use></svg><span data-i18n="printReport">طباعة التقرير</span></button>
+      </div>
+      <div class="report-grid">
+        <article class="panel chart-panel">
+          <div class="panel-heading"><div><h2 data-i18n="attemptDistribution">توزيع نتائج المصادقة</h2><p data-i18n="distributionSubtitle">نسبة النجاح والرفض من سجلات ACCESS الفعلية</p></div><div class="chart-legend"><span><i class="chart-dot success"></i><span data-i18n="authorized">مصرّح بها</span></span><span><i class="chart-dot denied"></i><span data-i18n="denied">مرفوضة</span></span></div></div>
+          <div class="bar-chart distribution-chart" aria-label="توزيع نتائج المصادقة">
+            <div class="chart-day" id="authorizedChart" style="--ok:{{ authorized_percent }}%;--no:0%"><div class="bar"><i class="bar-ok"></i><i class="bar-no"></i></div><span data-i18n="authorized">مصرّح بها</span></div>
+            <div class="chart-day" id="deniedChart" style="--ok:0%;--no:{{ denied_percent }}%"><div class="bar"><i class="bar-ok"></i><i class="bar-no"></i></div><span data-i18n="denied">مرفوضة</span></div>
+          </div>
+          <p class="chart-caption" data-i18n="sqliteChartCaption">محسوب مباشرة من محاولات ACCESS المحفوظة في SQLite.</p>
+        </article>
+        <aside class="report-summary">
+          <article><span data-i18n="administratorAttempts">محاولات Administrator</span><strong id="reportAdministratorValue">{{ summary["administrator_attempts"] }}</strong><small id="reportAdministratorPercent">{{ administrator_percent }}%</small></article>
+          <article><span data-i18n="technicianAttempts">محاولات Technician</span><strong id="reportTechnicianValue">{{ summary["technician_attempts"] }}</strong><small id="reportTechnicianPercent">{{ technician_percent }}%</small></article>
+          <article><span data-i18n="unknownAttempts">بصمات غير معروفة</span><strong id="reportUnknownValue">{{ summary["unknown_attempts"] }}</strong><small id="reportUnknownPercent">{{ unknown_percent }}%</small></article>
+          <article><span data-i18n="averageLatency">متوسط زمن الاستجابة</span><strong><span id="averageLatencyValue">{{ summary["average_latency"] }}</span> <em data-i18n="milliseconds">مللي ثانية</em></strong><small data-i18n="measuredMetric">محسوب من محاولات ACCESS</small></article>
+        </aside>
+      </div>
+    </section>
+
+    <section class="view" data-view-panel="system" aria-labelledby="system-title" hidden>
+      <div class="page-heading">
+        <div><p class="eyebrow" data-i18n="deviceOverview">نظرة الجهاز</p><h1 id="system-title" data-i18n="systemTitle">حالة النظام</h1><p data-i18n="systemSubtitle">مراقبة اتصال مكوّنات النموذج دون أوامر تحكم</p></div>
+        <span class="badge {% if latest %}badge-success{% endif %} status-large" id="systemStatus"><i></i><span id="systemStatusLabel" data-i18n="{{ 'eventAvailable' if latest else 'waitingFirstEvent' }}">{{ "حدث أخير متاح" if latest else "بانتظار أول حدث" }}</span></span>
+      </div>
+      <div class="system-grid">
+        <article class="system-card"><div class="system-icon blue"><svg class="icon"><use href="#icon-cpu"></use></svg></div><div><span data-i18n="arduinoDevice">جهاز Arduino</span><strong>FSAS-LED-01</strong><small><i class="mini-dot{% if not latest %} idle{% endif %}" id="deviceEventDot"></i><span id="deviceEventLabel" data-i18n="{{ 'eventSeen' if latest else 'noEventYet' }}">{{ "تم استلام حدث" if latest else "لم يصل حدث بعد" }}</span></small></div></article>
+        <article class="system-card"><div class="system-icon violet"><svg class="icon"><use href="#icon-fingerprint"></use></svg></div><div><span data-i18n="fingerprintSensor">حساس AS608</span><strong>57,600 baud</strong><small><i class="mini-dot idle"></i><span data-i18n="configuredInSketch">إعداد البرنامج الثابت</span></small></div></article>
+        <article class="system-card"><div class="system-icon green"><svg class="icon"><use href="#icon-database"></use></svg></div><div><span data-i18n="localDatabase">قاعدة البيانات المحلية</span><strong>SQLite</strong><small><i class="mini-dot"></i><span><span id="storedEventCount">{{ record_count }}</span> <span data-i18n="storedEvents">حدثًا محفوظًا</span></span></small></div></article>
+        <article class="system-card"><div class="system-icon amber"><svg class="icon"><use href="#icon-led"></use></svg></div><div><span data-i18n="indicatorState">آخر حالة مؤشر</span><strong id="latestIndicator">{{ latest["indicator_state"] if latest else "—" }}</strong><small><i class="mini-dot idle"></i><span id="indicatorNote" data-i18n="{{ 'lastReportedIndicator' if latest else 'noIndicatorReported' }}">{{ "آخر قيمة أبلغ عنها الجهاز" if latest else "لا توجد قيمة مسجلة" }}</span></small></div></article>
+      </div>
+      <article class="panel details-panel">
+        <div class="panel-heading"><div><h2 data-i18n="technicalDetails">تفاصيل المراقبة</h2><p data-i18n="technicalDetailsSubtitle">إعدادات القراءة الحالية</p></div></div>
+        <dl class="detail-list">
+          <div><dt data-i18n="deviceId">معرّف الجهاز</dt><dd>FSAS-LED-01</dd></div><div><dt data-i18n="hostSerial">اتصال المضيف</dt><dd>9,600 baud</dd></div>
+          <div><dt data-i18n="bootId">معرّف التشغيل</dt><dd id="latestBootId">{{ latest["boot_id"] if latest else "—" }}</dd></div><div><dt data-i18n="latestSequence">آخر رقم حدث</dt><dd id="latestSequenceValue">{{ latest["event_seq"] if latest else "—" }}</dd></div>
+          <div><dt data-i18n="lockoutPolicy">سياسة القفل المؤقت</dt><dd data-i18n="lockoutPolicyValue">4 محاولات / دقيقتان</dd></div><div><dt data-i18n="dashboardMode">وضع الواجهة</dt><dd data-i18n="readOnlyMonitoring">مراقبة للقراءة فقط</dd></div>
+        </dl>
+      </article>
+    </section>
+
+  </main>
+
+  <script>
+    (() => {
+      "use strict";
+
+      const translations = {
+        ar: {
+          brand: "لوحة مراقبة الدخول بالبصمة", liveData: "بيانات SQLite", eventRecorded: "حدث أخير مسجل", awaitingEvent: "بانتظار أول حدث", administrator: "Administrator", navigation: "التنقل",
+          navDashboard: "لوحة المعلومات", navRecords: "سجلات الدخول", navUsers: "المستخدمون", navAlerts: "التنبيهات", navReports: "التقارير", navSystem: "النظام",
+          liveNotice: "تعرض هذه الواجهة سجلات SQLite الفعلية للقراءة فقط؛ لا ترسل أي أوامر إلى Arduino.", monitoringOverview: "نظرة المراقبة", dashboardTitle: "لوحة المعلومات", dashboardSubtitle: "ملخص نشاط المصادقة ببصمة الإصبع", lastUpdated: "آخر تحديث",
+          totalAttempts: "إجمالي المحاولات", attemptsBreakdown: "{{ summary['successful_attempts'] }} ناجحة · {{ summary['failed_attempts'] }} مرفوضة", authorized: "مصرّح بها", authorizedShare: "{{ authorized_percent }}% من المحاولات", denied: "مرفوضة", deniedShare: "{{ denied_percent }}% من المحاولات", lockouts: "حالات القفل المؤقت", lockoutsSubtitle: "أحداث مسجلة في السجل",
+          ledLegendTitle: "دلالة مخارج النموذج", ledLegendDescription: "يشغّل Arduino الـRelay محليًا، فتضيء LED الخضراء عبر نقاط COM/NO لمحاكاة إشارة فتح القفل. LED الحمراء تعني الرفض أو الخطأ أو القفل المؤقت.", greenLed: "Relay + أخضر: دخول مسموح", redLed: "أحمر: رفض / خطأ / قفل",
+          recentRecords: "أحدث سجلات الدخول", recentRecordsSubtitle: "آخر الأحداث التي استقبلها تطبيق المراقبة", viewAll: "عرض الكل", user: "المستخدم", result: "النتيجة", status: "الحالة", reason: "السبب", latency: "الاستجابة", time: "الوقت",
+          eventHistory: "سجل الأحداث", recordsTitle: "سجلات الدخول", recordsSubtitle: "استعراض محاولات المصادقة وأحداث النظام المسجلة", searchLabel: "البحث في السجلات", searchPlaceholder: "ابحث باسم المستخدم أو السبب", filterLabel: "تصفية النتائج", filterAll: "كل الحالات", filterSuccess: "ناجحة", filterDenied: "مرفوضة", filterLockout: "قفل مؤقت", filterErrors: "أخطاء", dateTime: "التاريخ والوقت", failedCount: "الفشل المتتالي", indicator: "المؤشر", monitoringOnly: "واجهة مراقبة للقراءة فقط", showingRecords: "عرض {shown} من {total} سجلات",
+          identityScope: "نطاق الهويات", usersTitle: "المستخدمون", usersSubtitle: "الهويتان المعتمدتان فقط في نموذج المصادقة", readOnly: "عرض فقط", active: "نشط", administratorRole: "مسؤول النظام", technicianRole: "الفني", templateId: "معرّف البصمة", recordedAttempts: "المحاولات المسجلة", lastSeen: "آخر ظهور", adminPermission: "هوية معتمدة للمصادقة المحلية", techPermission: "هوية معتمدة للمصادقة المحلية", identityPolicy: "سياسة الهوية", identityPolicyText: "يقبل النظام المعرّفين 1 و2 فقط. تُسجّل أي بصمة غير معروفة كمحاولة مرفوضة، ولا تُخزّن صور البصمات أو قوالبها في قاعدة البيانات.",
+          securityMonitoring: "المراقبة الأمنية", alertsTitle: "التنبيهات", alertsSubtitle: "الأحداث التي تحتاج مراجعة المشرف", openAlerts: "تنبيهات للعرض", replayAlert: "اشتباه في إعادة إرسال حدث", replayDescription: "استقبل النظام حدثًا مكررًا بالمعرّف نفسه؛ تم حفظه كتنبيه أمني فقط.", invalidAlert: "حدث غير صالح", invalidDescription: "وصل سطر لا يطابق تنسيق بروتوكول الأحداث وتم رفض تخزينه كسجل دخول.", lockoutAlert: "قفل مؤقت مسجل", lockoutDescription: "بدأ القفل المؤقت بعد أربع محاولات فاشلة متتالية.", review: "للمراجعة", recorded: "مسجل",
+          activityAnalysis: "تحليل النشاط", reportsTitle: "التقارير", reportsSubtitle: "ملخص مرئي لمحاولات المصادقة المسجلة", printReport: "طباعة التقرير", attemptDistribution: "توزيع نتائج المصادقة", distributionSubtitle: "نسبة النجاح والرفض من سجلات ACCESS الفعلية", sqliteChartCaption: "محسوب مباشرة من محاولات ACCESS المحفوظة في SQLite.", administratorAttempts: "محاولات Administrator", technicianAttempts: "محاولات Technician", unknownAttempts: "بصمات غير معروفة", averageLatency: "متوسط زمن الاستجابة", milliseconds: "مللي ثانية", measuredMetric: "محسوب من محاولات ACCESS",
+          deviceOverview: "نظرة الجهاز", systemTitle: "حالة النظام", systemSubtitle: "مراقبة آخر بيانات مسجلة دون أوامر تحكم", eventAvailable: "حدث أخير متاح", waitingFirstEvent: "بانتظار أول حدث", arduinoDevice: "جهاز Arduino", eventSeen: "تم استلام حدث", noEventYet: "لم يصل حدث بعد", fingerprintSensor: "حساس AS608", configuredInSketch: "إعداد البرنامج الثابت", localDatabase: "قاعدة البيانات المحلية", storedEvents: "حدثًا محفوظًا", indicatorState: "آخر حالة مؤشر", lastReportedIndicator: "آخر قيمة أبلغ عنها الجهاز", noIndicatorReported: "لا توجد قيمة مسجلة", technicalDetails: "تفاصيل المراقبة", technicalDetailsSubtitle: "إعدادات القراءة الحالية", deviceId: "معرّف الجهاز", hostSerial: "اتصال المضيف", bootId: "معرّف التشغيل", latestSequence: "آخر رقم حدث", lockoutPolicy: "سياسة القفل المؤقت", lockoutPolicyValue: "4 محاولات / دقيقتان", dashboardMode: "وضع الواجهة", readOnlyMonitoring: "مراقبة للقراءة فقط", noRecords: "لا توجد سجلات بعد", noAlerts: "لا توجد تنبيهات مسجلة",
+          userAdmin: "Administrator", userTech: "Technician", userUnknown: "غير معروف", userSystem: "النظام", resultSuccess: "ناجحة", resultFailed: "فاشلة", resultError: "خطأ", resultLockout: "قفل مؤقت", resultReady: "جاهز", statusGranted: "مسموح", statusDenied: "مرفوض", statusLocked: "مقفل", statusIdle: "خامل", reasonNone: "لا يوجد", reasonAccessGranted: "تم السماح بالدخول", reasonNotMatched: "البصمة غير مطابقة", reasonUnapproved: "معرّف قالب غير مصرح به", reasonFourAttempts: "أربع محاولات فاشلة", reasonSensorInitialization: "فشل تهيئة الحساس", reasonSensorCommunication: "خطأ اتصال بالحساس", reasonImageCapture: "خطأ التقاط الصورة", reasonFeatureExtraction: "خطأ استخراج السمات", reasonSensorProcessing: "خطأ معالجة الحساس", reasonTimeExpired: "انتهاء مدة القفل", indicatorGreen: "Relay + أخضر", indicatorRed: "أحمر", indicatorOff: "متوقف"
+        },
+        en: {
+          brand: "Fingerprint Access Monitor", liveData: "SQLite data", eventRecorded: "Latest event recorded", awaitingEvent: "Waiting for first event", administrator: "Administrator", navigation: "Navigation",
+          navDashboard: "Dashboard", navRecords: "Access Records", navUsers: "Users", navAlerts: "Alerts", navReports: "Reports", navSystem: "System",
+          liveNotice: "This read-only interface displays actual SQLite records and sends no commands to Arduino.", monitoringOverview: "Monitoring overview", dashboardTitle: "Dashboard", dashboardSubtitle: "Overview of fingerprint authentication activity", lastUpdated: "Last updated",
+          totalAttempts: "Total attempts", attemptsBreakdown: "{{ summary['successful_attempts'] }} authorized · {{ summary['failed_attempts'] }} denied", authorized: "Authorized", authorizedShare: "{{ authorized_percent }}% of attempts", denied: "Denied", deniedShare: "{{ denied_percent }}% of attempts", lockouts: "Lockout events", lockoutsSubtitle: "Events recorded in the log",
+          ledLegendTitle: "Prototype output meaning", ledLegendDescription: "Arduino controls the relay locally; its COM/NO contacts power the green LED to simulate the lock-activation signal. The red LED indicates denial, error, or temporary lockout.", greenLed: "Relay + green: access granted", redLed: "Red: denial / error / lockout",
+          recentRecords: "Recent Access Records", recentRecordsSubtitle: "Latest events received by the monitoring application", viewAll: "View all", user: "User", result: "Result", status: "Status", reason: "Reason", latency: "Latency", time: "Time",
+          eventHistory: "Event history", recordsTitle: "Access Records", recordsSubtitle: "Review recorded authentication attempts and system events", searchLabel: "Search records", searchPlaceholder: "Search by user or reason", filterLabel: "Filter results", filterAll: "All statuses", filterSuccess: "Successful", filterDenied: "Denied", filterLockout: "Lockout", filterErrors: "Errors", dateTime: "Date and time", failedCount: "Failed count", indicator: "Indicator", monitoringOnly: "Read-only monitoring interface", showingRecords: "Showing {shown} of {total} records",
+          identityScope: "Identity scope", usersTitle: "Users", usersSubtitle: "The only two approved identities in the authentication prototype", readOnly: "View only", active: "Active", administratorRole: "System administrator", technicianRole: "Technician", templateId: "Template ID", recordedAttempts: "Recorded attempts", lastSeen: "Last seen", adminPermission: "Approved identity for local authentication", techPermission: "Approved identity for local authentication", identityPolicy: "Identity policy", identityPolicyText: "The system accepts IDs 1 and 2 only. Any unknown fingerprint is recorded as denied, and no raw fingerprint images or templates are stored in the database.",
+          securityMonitoring: "Security monitoring", alertsTitle: "Alerts", alertsSubtitle: "Events that require administrator review", openAlerts: "alerts to review", replayAlert: "Suspected event replay", replayDescription: "An event with the same identifier was received again; it was stored as a security alert only.", invalidAlert: "Invalid event", invalidDescription: "A line that did not match the event protocol was received and rejected as an access record.", lockoutAlert: "Recorded lockout", lockoutDescription: "A temporary lockout started after four consecutive failed attempts.", review: "Review", recorded: "Recorded",
+          activityAnalysis: "Activity analysis", reportsTitle: "Reports", reportsSubtitle: "Visual summary of recorded authentication attempts", printReport: "Print report", attemptDistribution: "Authentication result distribution", distributionSubtitle: "Authorized and denied shares from actual ACCESS records", sqliteChartCaption: "Calculated directly from ACCESS attempts stored in SQLite.", administratorAttempts: "Administrator attempts", technicianAttempts: "Technician attempts", unknownAttempts: "Unknown fingerprints", averageLatency: "Average response time", milliseconds: "ms", measuredMetric: "Calculated from ACCESS attempts",
+          deviceOverview: "Device overview", systemTitle: "System Status", systemSubtitle: "Monitor the latest recorded data without control commands", eventAvailable: "Latest event available", waitingFirstEvent: "Waiting for first event", arduinoDevice: "Arduino device", eventSeen: "An event was received", noEventYet: "No event received yet", fingerprintSensor: "AS608 sensor", configuredInSketch: "Firmware configuration", localDatabase: "Local database", storedEvents: "events stored", indicatorState: "Latest indicator state", lastReportedIndicator: "Last value reported by the device", noIndicatorReported: "No recorded value", technicalDetails: "Monitoring details", technicalDetailsSubtitle: "Current read settings", deviceId: "Device ID", hostSerial: "Host serial", bootId: "Boot ID", latestSequence: "Latest event sequence", lockoutPolicy: "Lockout policy", lockoutPolicyValue: "4 attempts / 2 minutes", dashboardMode: "Dashboard mode", readOnlyMonitoring: "Read-only monitoring", noRecords: "No records yet", noAlerts: "No alerts recorded",
+          userAdmin: "Administrator", userTech: "Technician", userUnknown: "Unknown", userSystem: "System", resultSuccess: "Success", resultFailed: "Failed", resultError: "Error", resultLockout: "Lockout", resultReady: "Ready", statusGranted: "Granted", statusDenied: "Denied", statusLocked: "Locked", statusIdle: "Idle", reasonNone: "None", reasonAccessGranted: "Access granted", reasonNotMatched: "Fingerprint not matched", reasonUnapproved: "Unapproved template ID", reasonFourAttempts: "Four failed attempts", reasonSensorInitialization: "Sensor initialization failed", reasonSensorCommunication: "Sensor communication error", reasonImageCapture: "Image capture error", reasonFeatureExtraction: "Feature extraction error", reasonSensorProcessing: "Sensor processing error", reasonTimeExpired: "Lockout period expired", indicatorGreen: "Relay + green", indicatorRed: "Red", indicatorOff: "Off"
+        }
+      };
+
+      let records = {{ events_json | tojson }};
+      let alerts = {{ alerts_json | tojson }};
+      const snapshotUrl = {{ url_for("api_snapshot") | tojson }};
+
+      const state = { lang: {{ language | tojson }}, view: "dashboard" };
+      const t = key => translations[state.lang][key] || key || "—";
+      const icon = id => `<svg class="icon"><use href="#icon-${id}"></use></svg>`;
+      const escapeHtml = value => String(value ?? "").replace(/[&<>"']/g, character => ({
+        "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
+      })[character]);
+
+      function formatDate(value, includeDate = true) {
+        const locale = state.lang === "ar" ? "ar-LY" : "en-GB";
+        const options = includeDate
+          ? { year: "numeric", month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" }
+          : { hour: "2-digit", minute: "2-digit", second: "2-digit" };
+        return new Intl.DateTimeFormat(locale, options).format(new Date(value));
+      }
+
+      function resultKey(value) {
+        return { SUCCESS: "resultSuccess", FAILED: "resultFailed", ERROR: "resultError", LOCKOUT: "resultLockout", READY: "resultReady" }[value] || value;
+      }
+      function statusKey(value) {
+        return { GRANTED: "statusGranted", DENIED: "statusDenied", LOCKED: "statusLocked", IDLE: "statusIdle" }[value] || value;
+      }
+      function reasonKey(value) {
+        return {
+          NONE: "reasonNone", FINGERPRINT_NOT_MATCHED: "reasonNotMatched",
+          UNAPPROVED_TEMPLATE_ID: "reasonUnapproved", FOUR_FAILED_ATTEMPTS: "reasonFourAttempts",
+          SENSOR_INITIALIZATION_FAILED: "reasonSensorInitialization",
+          SENSOR_COMMUNICATION_ERROR: "reasonSensorCommunication", IMAGE_CAPTURE_ERROR: "reasonImageCapture",
+          FEATURE_EXTRACTION_ERROR: "reasonFeatureExtraction", SENSOR_PROCESSING_ERROR: "reasonSensorProcessing",
+          TIME_EXPIRED: "reasonTimeExpired"
+        }[value] || value;
+      }
+      function indicatorKey(value) {
+        return { GREEN: "indicatorGreen", RED: "indicatorRed", OFF: "indicatorOff" }[value] || value;
+      }
+      const setText = (id, value) => { document.getElementById(id).textContent = String(value ?? "—"); };
+      function setI18nKey(id, key) {
+        const node = document.getElementById(id);
+        node.dataset.i18n = key;
+        node.textContent = t(key);
+      }
+      function refreshTranslationKey(key) {
+        document.querySelectorAll(`[data-i18n="${key}"]`).forEach(node => { node.textContent = t(key); });
+      }
+      function setLastSeen(id, value) {
+        const node = document.getElementById(id);
+        if (value) {
+          node.dataset.date = value;
+          node.textContent = formatDate(value);
+        } else {
+          delete node.dataset.date;
+          node.textContent = "—";
+        }
+      }
+      function updateLastUpdated() {
+        const locale = state.lang === "ar" ? "ar-LY" : "en-GB";
+        document.getElementById("lastUpdated").textContent = new Intl.DateTimeFormat(
+          locale, { hour: "2-digit", minute: "2-digit", second: "2-digit" }
+        ).format(new Date());
+      }
+      function translatedReason(record) {
+        if (record.reason === "NONE" && record.result === "SUCCESS") return t("reasonAccessGranted");
+        return t(reasonKey(record.reason));
+      }
+      function badgeClass(record) {
+        if (record.result === "SUCCESS") return "success";
+        if (record.result === "FAILED" || record.result === "ERROR") return "danger";
+        if (record.result === "LOCKOUT") return "warning";
+        return "neutral";
+      }
+
+      function recordRow(record, compact = false) {
+        const latency = record.latency !== null && record.latency !== undefined ? `${record.latency} ms` : "—";
+        if (compact) {
+          return `<tr>
+            <td><span class="record-id">${record.id}</span></td>
+            <td><strong class="user-cell">${t(record.user)}</strong></td>
+            <td><span class="table-badge ${badgeClass(record)}">${t(resultKey(record.result))}</span></td>
+            <td><span class="status-text ${badgeClass(record)}">${t(statusKey(record.status))}</span></td>
+            <td>${translatedReason(record)}</td><td class="numeric">${latency}</td><td class="numeric">${formatDate(record.at, false)}</td>
+          </tr>`;
+        }
+        return `<tr>
+          <td><span class="record-id">${record.id}</span></td><td class="date-cell">${formatDate(record.at)}</td><td><strong class="user-cell">${t(record.user)}</strong></td>
+          <td><span class="table-badge ${badgeClass(record)}">${t(resultKey(record.result))}</span></td><td><span class="status-text ${badgeClass(record)}">${t(statusKey(record.status))}</span></td>
+          <td>${translatedReason(record)}</td><td class="numeric">${record.failed}</td><td class="numeric">${latency}</td>
+          <td><span class="indicator-pill ${record.indicator.toLowerCase()}"><i></i>${t(indicatorKey(record.indicator))}</span></td>
+        </tr>`;
+      }
+
+      function renderDashboardRecords() {
+        document.getElementById("dashboardRecords").innerHTML = records.length
+          ? records.slice(0, 7).map(record => recordRow(record, true)).join("")
+          : `<tr><td class="empty-state" colspan="7">${t("noRecords")}</td></tr>`;
+      }
+
+      function renderAllRecords() {
+        const query = document.getElementById("recordSearch").value.trim().toLocaleLowerCase(state.lang);
+        const filter = document.getElementById("recordFilter").value;
+        const filtered = records.filter(record => {
+          const localized = [t(record.user), translatedReason(record), t(resultKey(record.result)), t(statusKey(record.status))].join(" ").toLocaleLowerCase(state.lang);
+          return (filter === "ALL" || record.result === filter) && (!query || localized.includes(query));
+        });
+        document.getElementById("allRecords").innerHTML = filtered.length
+          ? filtered.map(record => recordRow(record)).join("")
+          : `<tr><td class="empty-state" colspan="9">${state.lang === "ar" ? "لا توجد سجلات مطابقة" : "No matching records"}</td></tr>`;
+        document.getElementById("recordCount").textContent = t("showingRecords").replace("{shown}", filtered.length).replace("{total}", records.length);
+      }
+
+      function renderAlerts() {
+        document.getElementById("alertList").innerHTML = alerts.length ? alerts.map(alert => `
+          <article class="alert-card alert-${alert.type}">
+            <div class="alert-icon">${icon(alert.type === "lockout" ? "lock" : alert.type === "invalid" ? "x-circle" : "alert")}</div>
+            <div class="alert-content"><div class="alert-heading"><h2>${escapeHtml(t(alert.title))}</h2><span class="alert-badge">${escapeHtml(t(alert.badge))}</span></div><p>${escapeHtml(alert.text)}</p><div class="alert-meta"><code>${escapeHtml(alert.meta)}</code><time>${formatDate(alert.date)}</time></div></div>
+          </article>`).join("") : `<article class="panel empty-state">${t("noAlerts")}</article>`;
+      }
+
+      function applySnapshot(payload) {
+        if (!payload || !payload.summary) return;
+        const summary = payload.summary;
+        records = Array.isArray(payload.events) ? payload.events : [];
+        alerts = Array.isArray(payload.alerts) ? payload.alerts : [];
+
+        translations.ar.attemptsBreakdown = `${summary.successful_attempts} ناجحة · ${summary.failed_attempts} مرفوضة`;
+        translations.en.attemptsBreakdown = `${summary.successful_attempts} authorized · ${summary.failed_attempts} denied`;
+        translations.ar.authorizedShare = `${payload.authorized_percent}% من المحاولات`;
+        translations.en.authorizedShare = `${payload.authorized_percent}% of attempts`;
+        translations.ar.deniedShare = `${payload.denied_percent}% من المحاولات`;
+        translations.en.deniedShare = `${payload.denied_percent}% of attempts`;
+        ["attemptsBreakdown", "authorizedShare", "deniedShare"].forEach(refreshTranslationKey);
+
+        setText("navRecordCount", summary.total_events);
+        setText("navAlertCount", summary.total_alerts);
+        setText("totalAttemptsValue", summary.total_attempts);
+        setText("authorizedValue", summary.successful_attempts);
+        setText("deniedValue", summary.failed_attempts);
+        setText("lockoutValue", summary.lockout_events);
+        setText("administratorAttemptsValue", summary.administrator_attempts);
+        setText("technicianAttemptsValue", summary.technician_attempts);
+        setText("alertSummaryCount", summary.total_alerts);
+        setText("reportAdministratorValue", summary.administrator_attempts);
+        setText("reportAdministratorPercent", `${payload.administrator_percent}%`);
+        setText("reportTechnicianValue", summary.technician_attempts);
+        setText("reportTechnicianPercent", `${payload.technician_percent}%`);
+        setText("reportUnknownValue", summary.unknown_attempts);
+        setText("reportUnknownPercent", `${payload.unknown_percent}%`);
+        setText("averageLatencyValue", summary.average_latency);
+        setText("storedEventCount", summary.total_events);
+
+        document.getElementById("authorizedChart").style.setProperty("--ok", `${payload.authorized_percent}%`);
+        document.getElementById("deniedChart").style.setProperty("--no", `${payload.denied_percent}%`);
+        setLastSeen("administratorLastSeen", payload.latest_administrator?.received_at);
+        setLastSeen("technicianLastSeen", payload.latest_technician?.received_at);
+
+        const latest = payload.latest;
+        document.getElementById("healthDot").classList.toggle("idle", !latest);
+        document.getElementById("deviceEventDot").classList.toggle("idle", !latest);
+        document.getElementById("systemStatus").classList.toggle("badge-success", Boolean(latest));
+        setI18nKey("healthLabel", latest ? "eventRecorded" : "awaitingEvent");
+        setI18nKey("systemStatusLabel", latest ? "eventAvailable" : "waitingFirstEvent");
+        setI18nKey("deviceEventLabel", latest ? "eventSeen" : "noEventYet");
+        setI18nKey("indicatorNote", latest ? "lastReportedIndicator" : "noIndicatorReported");
+        setText("latestIndicator", latest ? t(indicatorKey(latest.indicator_state)) : "—");
+        setText("latestBootId", latest?.boot_id);
+        setText("latestSequenceValue", latest?.event_seq);
+
+        renderDashboardRecords();
+        renderAllRecords();
+        renderAlerts();
+        updateLastUpdated();
+      }
+
+      let refreshInFlight = false;
+      async function refreshLiveData() {
+        if (refreshInFlight) return;
+        if (typeof fetch !== "function") {
+          // Restricted preview browsers may disable fetch; a reload preserves
+          // the current hash/view and still shows the latest SQLite snapshot.
+          if (!document.hidden) window.location.reload();
+          return;
+        }
+        refreshInFlight = true;
+        try {
+          const response = await Promise.race([
+            fetch(snapshotUrl, {
+              cache: "no-store",
+              credentials: "same-origin",
+              headers: { Accept: "application/json" }
+            }),
+            new Promise(resolve => setTimeout(() => resolve(null), 2500))
+          ]);
+          if (response === null) {
+            // If an embedded preview blocks same-origin requests, fall back to
+            // a normal page reload instead of leaving stale counters on screen.
+            if (!document.hidden) window.location.reload();
+            return;
+          }
+          if (response.ok) applySnapshot(await response.json());
+        } catch (_) {
+          /* Keep displaying the last valid snapshot while the local server reconnects. */
+        } finally {
+          refreshInFlight = false;
+        }
+      }
+
+      function updateLanguage(lang) {
+        state.lang = lang;
+        document.documentElement.lang = lang;
+        document.documentElement.dir = lang === "ar" ? "rtl" : "ltr";
+        document.title = t("brand");
+        document.querySelectorAll("[data-i18n]").forEach(node => { node.textContent = t(node.dataset.i18n); });
+        document.querySelectorAll("[data-i18n-placeholder]").forEach(node => { node.placeholder = t(node.dataset.i18nPlaceholder); });
+        document.getElementById("languageLabel").textContent = lang === "ar" ? "EN" : "عربي";
+        document.getElementById("languageButton").setAttribute("aria-label", lang === "ar" ? "Switch to English" : "التبديل إلى العربية");
+        document.getElementById("sidebar").setAttribute("aria-label", lang === "ar" ? "التنقل الرئيسي" : "Main navigation");
+        document.querySelectorAll("[data-date]").forEach(node => { node.textContent = formatDate(node.dataset.date); });
+        renderDashboardRecords(); renderAllRecords(); renderAlerts(); updateClock();
+        try { localStorage.setItem("fsas-ui-language", lang); } catch (_) { /* Storage may be unavailable in a local preview. */ }
+      }
+
+      function setView(view) {
+        if (!document.querySelector(`[data-view-panel="${view}"]`)) return;
+        state.view = view;
+        document.querySelectorAll("[data-view-panel]").forEach(panel => {
+          const active = panel.dataset.viewPanel === view;
+          panel.hidden = !active;
+          panel.classList.toggle("is-active", active);
+        });
+        document.querySelectorAll("[data-view]").forEach(item => {
+          const active = item.dataset.view === view;
+          item.classList.toggle("is-active", active);
+          if (active) item.setAttribute("aria-current", "page"); else item.removeAttribute("aria-current");
+        });
+        document.body.classList.remove("sidebar-open");
+        document.getElementById("menuButton").setAttribute("aria-expanded", "false");
+        window.scrollTo({ top: 0, behavior: "smooth" });
+        try { history.replaceState(null, "", `#${view}`); } catch (_) { /* Local file history can be restricted. */ }
+      }
+
+      function updateClock() {
+        const now = new Date();
+        const locale = state.lang === "ar" ? "ar-LY" : "en-GB";
+        document.getElementById("liveClock").textContent = new Intl.DateTimeFormat(locale, { hour: "2-digit", minute: "2-digit", second: "2-digit" }).format(now);
+        document.getElementById("liveDate").textContent = new Intl.DateTimeFormat(locale, { weekday: "short", year: "numeric", month: "short", day: "numeric" }).format(now);
+        if (now.getSeconds() % 5 === 0) refreshLiveData();
+      }
+
+      document.querySelectorAll("[data-view]").forEach(button => button.addEventListener("click", () => setView(button.dataset.view)));
+      document.querySelectorAll("[data-go-view]").forEach(button => button.addEventListener("click", () => setView(button.dataset.goView)));
+      document.getElementById("languageButton").addEventListener("click", () => {
+        window.location.href = state.lang === "ar" ? {{ url_for("dashboard_en") | tojson }} : {{ url_for("dashboard_ar") | tojson }};
+      });
+      document.getElementById("recordSearch").addEventListener("input", renderAllRecords);
+      document.getElementById("recordFilter").addEventListener("change", renderAllRecords);
+      document.getElementById("printReport").addEventListener("click", () => window.print());
+      document.getElementById("menuButton").addEventListener("click", () => {
+        const open = document.body.classList.toggle("sidebar-open");
+        document.getElementById("menuButton").setAttribute("aria-expanded", String(open));
+      });
+      [document.getElementById("closeSidebar"), document.getElementById("sidebarOverlay")].forEach(button => button.addEventListener("click", () => {
+        document.body.classList.remove("sidebar-open"); document.getElementById("menuButton").setAttribute("aria-expanded", "false");
+      }));
+      document.addEventListener("keydown", event => {
+        if (event.key === "Escape") { document.body.classList.remove("sidebar-open"); document.getElementById("menuButton").setAttribute("aria-expanded", "false"); }
+      });
+
+      updateLanguage(state.lang);
+      updateLastUpdated();
+      const initialView = location.hash.slice(1);
+      if (initialView) setView(initialView);
+      setInterval(updateClock, 1000);
+      document.addEventListener("visibilitychange", () => { if (!document.hidden) refreshLiveData(); });
+    })();
+  </script>
+</body>
+</html>
